@@ -1,5 +1,7 @@
+#======================================================================================================================#
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'AWS CloudFormation Template for a single-instance bastion host'
+#======================================================================================================================#
 Parameters:
   AvailabilityZone:
     Type: AWS::EC2::AvailabilityZone::Name
@@ -17,6 +19,12 @@ Parameters:
   KeyName:
     Description: Name of an existing EC2 KeyPair for SSH
     Type: AWS::EC2::KeyPair::KeyName
+  VPC:
+    Type: String
+    Default: vpc-07ec9e08c8f210a84 #this is bad... another method should be explored...
+    Description: Voacrum VPC ID
+
+#======================================================================================================================#
 
 Mappings:
   EnvironmentTypeToInstanceType:
@@ -26,6 +34,8 @@ Mappings:
       InstanceType: t2.micro
     prod:
       InstanceType: t2.small
+
+#======================================================================================================================#
 
 Resources:
   VPC:
@@ -65,6 +75,20 @@ Resources:
     Properties:
       RouteTableId: !Ref RouteTable
       SubnetId: !Ref Subnet10
+
+#======================================================================================================================#
+#                                      Response Playbook: Compromised Bastion Host
+#
+# 1) Identify
+#    - Retrieve the Instance ID of the affected system. In this case we can look at "BastionInstance"
+# 2) Contain
+#    - Isolate the system from the network by switching the Security group in "BastionInstance" to IsoloatedSecurityGroup
+# 3) Investigate
+#    - Do NOT shut off or reset the system, we want to preserve the data being stored in the Instance's RAM
+# 4) Eradicate
+#    - Document, Terminate, Recover. Also rotate the Instance's Keys to ensure security.
+#======================================================================================================================#
+
   BastionInstance:
     Type: AWS::EC2::Instance
     Properties:
@@ -72,9 +96,11 @@ Resources:
       ImageId: !Ref LatestAmiId
       InstanceType:
         !FindInMap [EnvironmentTypeToInstanceType, !Ref EnvironmentType, InstanceType]
+#==== Responsible for providing privs for SSH/port 22 access ====#
       SecurityGroups: 
         - !Ref 'InboundAccessSecurityGroup'
       KeyName: !Ref 'KeyName'
+
   InboundAccessSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -84,6 +110,16 @@ Resources:
         FromPort: 22
         ToPort: 22
         CidrIp: 0.0.0.0/0
+
+    IsolatedSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+        GroupDescription: "Denies all inbound and outbound traffic for Incident Response containment"
+        VpcId: !Ref VPC
+        SecurityGroupIngress: [] # Explicitly empty to deny all incoming traffic
+        SecurityGroupEgress: []  # Explicitly empty to override default open outbound rule
+
+#======================================================================================================================#
 
 Outputs:
   InstanceId:
