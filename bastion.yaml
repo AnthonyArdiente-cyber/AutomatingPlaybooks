@@ -76,7 +76,7 @@ Resources:
       RouteTableId: !Ref RouteTable
       SubnetId: !Ref Subnet10
 
-#======================================================================================================================#
+#=========================================================================================================================#
 #                                      Response Playbook: Compromised Bastion Host
 #
 # 1) Identify
@@ -87,7 +87,8 @@ Resources:
 #    - Do NOT shut off or reset the system, we want to preserve the data being stored in the Instance's RAM
 # 4) Eradicate
 #    - Document, Terminate, Recover. Also rotate the Instance's Keys to ensure security.
-#======================================================================================================================#
+#
+#=========================================================================================================================#
 
   BastionInstance:
     Type: AWS::EC2::Instance
