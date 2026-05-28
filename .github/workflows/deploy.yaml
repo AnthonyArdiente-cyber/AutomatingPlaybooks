@@ -21,9 +21,13 @@ jobs:
           # Vocareum environments usually operate in us-east-1
           aws-region: us-east-1
 
+
       - name: Deploy CloudFormation Stack
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: Bastion-Host-Stack
           template: bastion.yaml
           no-fail-on-empty-changeset: "true"
+          parameter-overrides: >
+            KeyName=vockey,
+            AvailabilityZone=us-east-1
