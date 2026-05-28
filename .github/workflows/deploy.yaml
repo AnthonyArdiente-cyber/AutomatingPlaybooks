@@ -30,4 +30,4 @@ jobs:
           no-fail-on-empty-changeset: "true"
           parameter-overrides: >
             KeyName=vockey,
-            AvailabilityZone=us-east-1
+            AvailabilityZone=us-east-1a
