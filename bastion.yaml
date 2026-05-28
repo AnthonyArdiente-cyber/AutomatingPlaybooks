@@ -19,10 +19,10 @@ Parameters:
   KeyName:
     Description: Name of an existing EC2 KeyPair for SSH
     Type: AWS::EC2::KeyPair::KeyName
-  VPC:
-    Type: String
-    Default: vpc-07ec9e08c8f210a84 #this is bad... another method should be explored...
-    Description: Voacrum VPC ID
+#  VPC:
+#    Type: String
+#    Default: vpc-07ec9e08c8f210a84 #this is bad... another method should be explored...
+#    Description: Voacrum VPC ID
 
 #======================================================================================================================#
 
